@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: hsl(217 30% 96%);
+  --color-accent: hsl(145 63% 35%);
+  --color-primary: hsl(217 76% 50%);
+  --color-surface: hsl(0 0% 100%);
+  --color-text-primary: hsl(217 20% 15%);
+  --color-text-secondary: hsl(217 20% 45%);
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-md font-semibold transition-all duration-250 hover:opacity-90 active:scale-95;
+  }
+  
+  .btn-secondary {
+    @apply bg-surface text-primary border border-primary px-6 py-3 rounded-md font-semibold transition-all duration-250 hover:bg-primary hover:text-white;
+  }
+  
+  .btn-emergency {
+    @apply bg-red-500 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all duration-250 hover:bg-red-600 active:scale-95 shadow-lg;
+  }
+  
+  .card {
+    @apply bg-surface rounded-lg p-6 shadow-card;
+  }
+  
+  .card-elevated {
+    @apply bg-surface rounded-lg p-6 shadow-lg;
+  }
+}
