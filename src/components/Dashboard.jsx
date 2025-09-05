@@ -4,14 +4,37 @@ import RightsGuide from './RightsGuide'
 import RecordingHistory from './RecordingHistory'
 import SubscriptionUpgrade from './SubscriptionUpgrade'
 import AIScriptGenerator from './AIScriptGenerator'
-import { MapPin, Languages, History, Zap, Download } from 'lucide-react'
+import RecordingButton from './RecordingButton'
+import { MapPin, Languages, History, Zap, Download, Loader2 } from 'lucide-react'
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('rights')
-  const { currentState, language, setLanguage, subscriptionStatus, offlineMode } = useApp()
+  const { 
+    currentState, 
+    language, 
+    setLanguage, 
+    subscriptionStatus, 
+    offlineMode, 
+    loading, 
+    error,
+    locationPermission 
+  } = useApp()
+
+  // Show loading state during app initialization
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-text-secondary">Initializing RightsRadar...</p>
+        </div>
+      </div>
+    )
+  }
 
   const tabs = [
     { id: 'rights', label: 'Your Rights', icon: MapPin },
+    { id: 'record', label: 'Record', icon: Zap },
     { id: 'ai', label: 'AI Scripts', icon: Zap },
     { id: 'history', label: 'History', icon: History },
     { id: 'upgrade', label: 'Upgrade', icon: Download }
@@ -19,14 +42,31 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Global Error Display */}
+      {error && (
+        <div className="card bg-red-50 border-red-200">
+          <div className="flex items-center space-x-2 text-red-800">
+            <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+            <span className="text-sm font-medium">{error}</span>
+          </div>
+        </div>
+      )}
+
       {/* Location & Language Bar */}
       <div className="card">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-3">
-            <MapPin className="h-5 w-5 text-primary" />
+            <MapPin className={`h-5 w-5 ${locationPermission === 'granted' ? 'text-primary' : 'text-gray-400'}`} />
             <div>
               <span className="text-sm text-text-secondary">Current location</span>
-              <p className="font-semibold text-text-primary">{currentState}</p>
+              <div className="flex items-center space-x-2">
+                <p className="font-semibold text-text-primary">{currentState}</p>
+                {locationPermission === 'denied' && (
+                  <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded">
+                    Location access denied
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           
@@ -36,12 +76,19 @@ const Dashboard = () => {
               <select 
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary"
               >
                 <option value="en">English</option>
                 <option value="es">Español</option>
               </select>
             </div>
+            
+            {subscriptionStatus === 'pro' && (
+              <div className="flex items-center space-x-2 text-sm text-accent bg-accent/10 px-3 py-1 rounded-full">
+                <div className="w-2 h-2 bg-accent rounded-full"></div>
+                <span>Pro</span>
+              </div>
+            )}
             
             {offlineMode && (
               <div className="flex items-center space-x-2 text-sm text-accent">
@@ -80,6 +127,7 @@ const Dashboard = () => {
         {/* Tab Content */}
         <div className="mt-6">
           {activeTab === 'rights' && <RightsGuide />}
+          {activeTab === 'record' && <RecordingButton />}
           {activeTab === 'ai' && <AIScriptGenerator />}
           {activeTab === 'history' && <RecordingHistory />}
           {activeTab === 'upgrade' && <SubscriptionUpgrade />}
